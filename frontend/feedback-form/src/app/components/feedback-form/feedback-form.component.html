@@ -1,0 +1,261 @@
+<div class="form-container">
+  <form #form="ngForm" (ngSubmit)="onSubmit()" novalidate>
+
+    <!-- Section A: Company / Plant Details -->
+    <div *ngIf="currentSection === 0" class="section-card">
+      <h2 class="section-title">Section A: Company / Plant Details</h2>
+
+      <label>Country:</label>
+      <select name="country" [(ngModel)]="formData.country" (change)="onCountryChange()" required>
+        <option value="" disabled selected>Select Country</option>
+        <option *ngFor="let c of Object.keys(countriesWithCompanies)" [value]="c">{{ c }}</option>
+      </select>
+
+      <label>Company Name:</label>
+      <select name="company" [(ngModel)]="formData.company" required [disabled]="!formData.country">
+        <option value="" disabled selected>Select Company</option>
+        <option *ngFor="let company of cementCompanies" [value]="company">{{ company }}</option>
+      </select>
+
+      <label>Date of Installation:</label>
+      <input type="date" name="installation" [(ngModel)]="formData.installation" required />
+    </div>
+
+    <!-- Section B: General Information -->
+    <div *ngIf="currentSection === 1" class="section-card">
+      <h2>Section B: General Information</h2>
+      
+      <div class="form-group">
+        <label >Contact Person's Name:</label>
+        <input type="text" name="name" [(ngModel)]="formData.name" required />
+      </div>
+
+      <div class="form-group">
+        <label >Contact Person's Number:</label>
+        <input type="tel" name="number" [(ngModel)]="formData.number" required pattern="[0-9]{10}" maxlength="10"
+        title="Enter a valid 10-digit number" />
+      </div>
+
+      <div class="form-group">
+         <label>Contact Person's Email ID:</label>
+         <div class="otp-row">
+          <input type="email" name="email" [(ngModel)]="formData.email" required />
+          <button type="button" (click)="sendOtp()" [disabled]="otpSent">Send OTP</button>
+          </div>
+      </div>
+
+      <div class="form-group" *ngIf="otpSent">
+        <label>Enter OTP:</label>
+         <div class="otp-row">
+          <input type="text" [(ngModel)]="enteredOtp" name="otp" maxlength="6" required />
+          <button type="button" (click)="verifyOtp()">Verify OTP</button>
+          <div *ngIf="otpVerified" class="success">✅ Email verified</div>
+          <div *ngIf="otpError" class="error">❌ Invalid OTP</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Contact Person's Designation:</label>
+        <mat-form-field appearance="fill">
+          <mat-label>Designation</mat-label>
+          <mat-select [(ngModel)]="formData.designation" name="designation" (selectionChange)="checkOtherDesignation()" required>
+            <mat-option *ngFor="let des of designations" [value]="des">{{ des }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- If 'Other' selected, show text input -->
+        <div *ngIf="showOtherDesignation">
+          <mat-form-field appearance="fill">
+            <mat-label>Enter your Designation</mat-label>
+            <input matInput [(ngModel)]="otherDesignation" name="otherDesignation" required />
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ✅ SECTION C FIXED -->
+    <div *ngIf="currentSection === 2" class="section-card">
+      <h2 class="section-title">Section C: Product Information</h2>
+
+      <div>
+        <label><strong>1. For what product was Condition Monitoring applied?</strong></label>
+        <div class="checkbox-row">
+          <label><input type="checkbox" value="Fill Pac" (change)="onCheckboxChange($event, 'products')" /> Fill Pac</label>
+          <label><input type="checkbox" value="Bucket Elevator" (change)="onCheckboxChange($event, 'products')" /> Bucket Elevator</label>
+        </div>
+      </div>
+
+      <div>
+        <label><strong>2. What details did you receive with the product?</strong></label>
+        <div class="checkbox-row">
+          <label><input type="checkbox" value="eDoc" (change)="onCheckboxChange($event, 'details')" /> eDoc</label>
+          <label><input type="checkbox" value="PartsPublisher" (change)="onCheckboxChange($event, 'details')" /> PartsPublisher</label>
+          <label><input type="checkbox" value="BG Insights" (change)="onCheckboxChange($event, 'details')" /> BG Insights</label>
+          <label><input type="checkbox" value="BG Predict" (change)="onCheckboxChange($event, 'details')" /> BG Predict</label>
+          <label><input type="checkbox" value="Elara" (change)="onCheckboxChange($event, 'details')" /> Elara</label>
+          <label><input type="checkbox" value="Hotline" (change)="onCheckboxChange($event, 'details')" /> Hotline</label>
+        </div>
+      </div>
+
+      <div>
+        <label><strong>3. Who uses the above application?</strong></label>
+        <div class="checkbox-row">
+          <label><input type="checkbox" value="Machine Operator" (change)="onCheckboxChange($event, 'users')" /> Machine Operator</label>
+          <label><input type="checkbox" value="Shift Manager" (change)="onCheckboxChange($event, 'users')" /> Shift Manager</label>
+          <label><input type="checkbox" value="Maintenance Manager" (change)="onCheckboxChange($event, 'users')" /> Maintenance Manager</label>
+          <label><input type="checkbox" value="Plant Manager" (change)="onCheckboxChange($event, 'users')" /> Plant Manager</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION D -->
+<div *ngIf="currentSection === 3" class="section-card">
+  <h2 class="section-title">Section D: Feedback</h2>
+
+  <!-- 1. Installation Quality -->
+  <div>
+    <label for="installationQuality">1. Installation Quality</label>
+    <mat-radio-group
+      [(ngModel)]="formData.installationQuality"
+      name="installationQuality"
+      required
+    >
+      <mat-radio-button value="Excellent">Excellent</mat-radio-button>
+      <mat-radio-button value="Good">Good</mat-radio-button>
+      <mat-radio-button value="Average">Average</mat-radio-button>
+      <mat-radio-button value="Poor">Poor</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- 2. Parameter Accuracy -->
+  <div>
+    <label for="parameterAccuracy">2. Parameter Accuracy</label>
+    <mat-radio-group
+      [(ngModel)]="formData.parameterAccuracy"
+      name="parameterAccuracy"
+      required
+    >
+      <mat-radio-button value="Yes">Yes</mat-radio-button>
+      <mat-radio-button value="No">No</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- 3. Data Reliability -->
+  <div>
+    <label for="dataReliability">3. Data Reliability</label>
+    <mat-radio-group
+      [(ngModel)]="formData.dataReliability"
+      name="dataReliability"
+      required
+    >
+      <mat-radio-button value="Very Reliable">Very Reliable</mat-radio-button>
+      <mat-radio-button value="Occasionally Dropped">Occasionally Dropped</mat-radio-button>
+      <mat-radio-button value="Frequently Interrupted">Frequently Interrupted</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- 4. Dashboard Usability -->
+  <div>
+    <label for="dashboardUsability">4. Dashboard Usability</label>
+    <mat-radio-group
+      [(ngModel)]="formData.dashboardUsability"
+      name="dashboardUsability"
+      required
+    >
+      <mat-radio-button value="Very Easy">Very Easy</mat-radio-button>
+      <mat-radio-button value="Moderate">Moderate</mat-radio-button>
+      <mat-radio-button value="Difficult">Difficult</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- 5. Maintenance Impact -->
+  <div>
+    <label for="maintenanceImpact">5. Maintenance Impact</label>
+    <mat-radio-group
+      [(ngModel)]="formData.maintenanceImpact"
+      name="maintenanceImpact"
+      required
+    >
+      <mat-radio-button value="Yes">Yes</mat-radio-button>
+      <mat-radio-button value="Partially">Partially</mat-radio-button>
+      <mat-radio-button value="No">No</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- 6. Downtime Reduction -->
+  <div>
+    <label for="downtimeReduction">6. Downtime Reduction</label>
+    <mat-radio-group
+      [(ngModel)]="formData.downtimeReduction"
+      name="downtimeReduction"
+      required
+    >
+      <mat-radio-button value="Yes">Yes</mat-radio-button>
+      <mat-radio-button value="Somewhat">Somewhat</mat-radio-button>
+      <mat-radio-button value="Not Yet">Not Yet</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- 7. Support Experience -->
+  <div>
+    <label for="supportExperience">7. Support Experience</label>
+    <mat-radio-group
+      [(ngModel)]="formData.supportExperience"
+      name="supportExperience"
+      required
+    >
+      <mat-radio-button value="Excellent">Excellent</mat-radio-button>
+      <mat-radio-button value="Good">Good</mat-radio-button>
+      <mat-radio-button value="Average">Average</mat-radio-button>
+      <mat-radio-button value="Poor">Poor</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- 8. Suggestions for Improvement -->
+  <div>
+    <mat-form-field appearance="outline">
+      <mat-label>8. Suggestions for Improvement</mat-label>
+      <textarea
+        matInput
+        rows="3"
+        [(ngModel)]="formData.suggestions"
+        name="suggestions"
+      ></textarea>
+    </mat-form-field>
+  </div>
+
+  <!-- 9. Overall Rating -->
+  <div>
+    <label for="rating">9. Overall Rating (1–5)</label>
+    <input
+      type="number"
+      min="1"
+      max="5"
+      [(ngModel)]="formData.rating"
+      name="rating"
+      required
+    />
+  </div>
+
+  <!-- 10. Additional Feedback -->
+  <div>
+    <label for="feedback">10. Additional Feedback</label>
+    <textarea
+      rows="3"
+      [(ngModel)]="formData.feedback"
+      name="feedback"
+    ></textarea>
+  </div>
+</div>
+
+    <!-- Navigation Buttons -->
+    <div class="button-group">
+      <button type="button" (click)="goToPrevious()" [disabled]="currentSection === 0">Previous</button>
+      <button type="button" *ngIf="currentSection < maxSections - 1" (click)="goToNext()">Next</button>
+      <button type="submit" *ngIf="currentSection === maxSections - 1" [disabled]="form.invalid">Submit</button>
+    </div>
+
+
+  </form>
+</div>
