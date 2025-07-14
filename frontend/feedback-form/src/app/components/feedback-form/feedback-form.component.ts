@@ -7,9 +7,10 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
-
 import { FeedbackService } from '../../feedback.service';
 import { DesignationService } from '../../designation.service';
+import { ChangeDetectorRef } from '@angular/core';
+
 
 @Component({
   selector: 'app-feedback-form',
@@ -39,10 +40,6 @@ export class FeedbackFormComponent implements OnInit {
     designation: '',
     country: '',
     company: '',
-    installation: '',
-    products: [],
-    details: [],
-    users: [],
     installationQuality: '',
     parameterAccuracy: '',
     dataReliability: '',
@@ -52,42 +49,17 @@ export class FeedbackFormComponent implements OnInit {
     supportExperience: '',
     suggestions: '',
     rating: '',
-    feedback: ''
+    feedback: '',
+    fillPacFeedback: '',
+    bucketElevatorFeedback: '',
+    bucketinstallation: '',
+    fillpacinstallation: '',
+    selectedProducts: []
   };
 
   designations: string[] = [];
   showOtherDesignation = false;
   otherDesignation = '';
-
-  constructor(
-    private feedbackService: FeedbackService,
-    private designationService: DesignationService
-  ) {}
-
-  ngOnInit() {
-    this.fetchDesignations();
-  }
-
-  fetchDesignations() {
-    const defaults = ['Maintenance Engineer', 'Plant Head', 'Mechanical Engineer'];
-
-    this.designationService.getDesignations().subscribe({
-      next: (data: any[]) => {
-        const dbStrings = (data || []).map((d: any) => d.name || d.designation || '');
-        const allDesignations = new Set([...defaults, ...dbStrings]);
-        this.designations = [...allDesignations, 'Other'];
-        console.log('Fetched designations:', this.designations);
-      },
-      error: (err) => {
-        console.error('Error fetching designations:', err);
-        this.designations = [...defaults, 'Other'];
-      }
-    });
-  }
-
-  checkOtherDesignation() {
-    this.showOtherDesignation = this.formData.designation === 'Other';
-  }
 
   countriesWithCompanies: Record<string, string[]> = {
     India: ['UltraTech', 'ACC', 'Ambuja'],
@@ -96,6 +68,52 @@ export class FeedbackFormComponent implements OnInit {
   };
 
   cementCompanies: string[] = [];
+
+  otpSent = false;
+  otpVerified = false;
+  otpError = false;
+  enteredOtp = '';
+  userEmail: string = '';
+
+  constructor(
+    private feedbackService: FeedbackService,
+    private designationService: DesignationService,
+    private cdRef: ChangeDetectorRef // 👈 Add this
+
+  ) {}
+
+  ngOnInit(): void {
+  this.fetchDesignations(); // ✅ Use your improved method
+}
+
+
+  fetchDesignations() {
+  const defaultList = ['Maintenance Engineer', 'Plant Head', 'Mechanical Engineer'];
+
+  this.designationService.getDesignations().subscribe({
+    next: (data: any[]) => {
+      console.log('📦 Fetched from DB:', data);
+
+      // ✅ No mapping needed — data is already string[]
+      const dbList = data.filter(v => typeof v === 'string' && v.trim());
+
+      const merged = [...new Set([...defaultList, ...dbList, 'Other'])];
+      console.log('✅ Final dropdown list:', merged);
+
+      this.designations = merged;
+      this.cdRef.detectChanges();
+    },
+    error: (err) => {
+      console.error('❌ Failed to load designations:', err);
+      this.designations = [...defaultList, 'Other'];
+      this.cdRef.detectChanges();
+    }
+  });
+}
+
+  checkOtherDesignation() {
+    this.showOtherDesignation = this.formData.designation === 'Other';
+  }
 
   onCountryChange() {
     this.cementCompanies = this.countriesWithCompanies[this.formData.country] || [];
@@ -113,35 +131,50 @@ export class FeedbackFormComponent implements OnInit {
       }
     });
 
+    if (this.currentSection === 1) {
+      if (!this.otpSent) {
+        alert('⚠️ Please request an OTP to verify your email before proceeding.');
+        return;
+      }
+      if (!this.otpVerified) {
+        alert('⚠️ Please verify your email with the OTP before proceeding.');
+        return;
+      }
+    }
+
     if (isValid) {
       this.currentSection++;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
   goToPrevious() {
     if (this.currentSection > 0) {
       this.currentSection--;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
-  onCheckboxChange(event: any, category: string) {
-  const value = event.target.value;
-  const checked = event.target.checked;
+  onProductToggle(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    const value = checkbox.value;
+    const list = this.formData.selectedProducts;
 
-  if (!this.formData[category]) {
-    this.formData[category] = [];
-  }
-
-  if (checked) {
-    this.formData[category].push(value);
-  } else {
-    const index = this.formData[category].indexOf(value);
-    if (index !== -1) {
-      this.formData[category].splice(index, 1);
+    if (checkbox.checked && !list.includes(value)) {
+      list.push(value);
+    } else if (!checkbox.checked) {
+      const index = list.indexOf(value);
+      if (index > -1) list.splice(index, 1);
     }
   }
-}
 
+  showFillPacFeedback(): boolean {
+    return this.formData.selectedProducts.includes('Fill Pac');
+  }
+
+  showBucketElevatorFeedback(): boolean {
+    return this.formData.selectedProducts.includes('Bucket Elevator');
+  }
 
   allowOnlyNumbers(event: KeyboardEvent) {
     const charCode = event.charCode;
@@ -149,12 +182,6 @@ export class FeedbackFormComponent implements OnInit {
       event.preventDefault();
     }
   }
-
-  // OTP Verification
-  otpSent = false;
-  otpVerified = false;
-  otpError = false;
-  enteredOtp = '';
 
   sendOtp(): void {
     if (!this.formData.email) {
@@ -204,32 +231,41 @@ export class FeedbackFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.showOtherDesignation && this.otherDesignation) {
-      this.formData.designation = this.otherDesignation;
-      this.saveDesignation(this.otherDesignation);
-    }
-
-    this.feedbackService.submitFeedback(this.formData).subscribe({
-      next: () => {
-        alert('✅ Feedback submitted successfully!');
-        this.resetForm();
-      },
-      error: (err) => {
-        console.error('Form submit error:', err);
-        alert('❌ Failed to submit feedback. Try again.');
-      }
-    });
+  if (this.showOtherDesignation && this.otherDesignation) {
+    this.formData.designation = this.otherDesignation.trim();
+    this.saveDesignation(this.otherDesignation); // Save to DB
   }
+
+  console.log('✅ Submitting formData:', this.formData);
+
+  this.feedbackService.submitFeedback(this.formData).subscribe({
+    next: () => {
+      alert('✅ Feedback submitted successfully!');
+      this.resetForm();
+
+      // ✅ Ensure new designation appears in dropdown after reset
+      this.fetchDesignations();
+    },
+    error: (err) => {
+      console.error('Form submit error:', err);
+      alert('❌ Failed to submit feedback. Try again.');
+    }
+  });
+}
+
 
   saveDesignation(newDes: string) {
-    this.designationService.addDesignation({ designation: newDes }).subscribe({
-      next: () => {
-        console.log('✅ New designation saved to DB');
-        this.fetchDesignations(); // Refresh after saving
-      },
-      error: (err) => console.error('❌ Failed to save designation:', err)
-    });
-  }
+  this.designationService.addDesignation({ designation: newDes }).subscribe({
+    next: () => {
+      console.log('✅ New designation saved to DB');
+
+      // 🔁 Only fetch after saving to ensure it's available
+      this.fetchDesignations();
+    },
+    error: (err) => console.error('❌ Failed to save designation:', err)
+  });
+}
+
 
   resetForm() {
     this.formData = {
@@ -239,10 +275,6 @@ export class FeedbackFormComponent implements OnInit {
       designation: '',
       country: '',
       company: '',
-      installation: '',
-      products: [],
-      details: [],
-      users: [],
       installationQuality: '',
       parameterAccuracy: '',
       dataReliability: '',
@@ -252,8 +284,14 @@ export class FeedbackFormComponent implements OnInit {
       supportExperience: '',
       suggestions: '',
       rating: '',
-      feedback: ''
+      feedback: '',
+      fillPacFeedback: '',
+      bucketElevatorFeedback: '',
+      bucketinstallation: '',
+      fillpacinstallation: '',
+      selectedProducts: []
     };
+
     this.currentSection = 0;
     this.cementCompanies = [];
     this.otpSent = false;
@@ -262,5 +300,6 @@ export class FeedbackFormComponent implements OnInit {
     this.enteredOtp = '';
     this.showOtherDesignation = false;
     this.otherDesignation = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

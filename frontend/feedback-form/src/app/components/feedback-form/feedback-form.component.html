@@ -1,117 +1,97 @@
-<div class="form-container">
-  <form #form="ngForm" (ngSubmit)="onSubmit()" novalidate>
+<form #form="ngForm" (ngSubmit)="onSubmit()" novalidate>
+<h1 class="section-title">CUSTOMER FEEDBACK FORM</h1>
+  <!-- Section A -->
+  <div *ngIf="currentSection >= 0" class="section-card">
+    <h2>Section A: Company / Plant Details</h2>
 
-    <!-- Section A: Company / Plant Details -->
-    <div *ngIf="currentSection === 0" class="section-card">
-      <h2 class="section-title">Section A: Company / Plant Details</h2>
+    <label>Country:</label>
+    <select name="country" [(ngModel)]="formData.country" (change)="onCountryChange()" required>
+      <option value="" disabled selected>Select Country</option>
+      <option *ngFor="let c of Object.keys(countriesWithCompanies)" [value]="c">{{ c }}</option>
+    </select>
 
-      <label>Country:</label>
-      <select name="country" [(ngModel)]="formData.country" (change)="onCountryChange()" required>
-        <option value="" disabled selected>Select Country</option>
-        <option *ngFor="let c of Object.keys(countriesWithCompanies)" [value]="c">{{ c }}</option>
-      </select>
+    <label>Company Name:</label>
+    <select name="company" [(ngModel)]="formData.company" required [disabled]="!formData.country">
+      <option value="" disabled selected>Select Company</option>
+      <option *ngFor="let company of cementCompanies" [value]="company">{{ company }}</option>
+    </select>
+  </div>
 
-      <label>Company Name:</label>
-      <select name="company" [(ngModel)]="formData.company" required [disabled]="!formData.country">
-        <option value="" disabled selected>Select Company</option>
-        <option *ngFor="let company of cementCompanies" [value]="company">{{ company }}</option>
-      </select>
+  <!-- Section B -->
+  <div *ngIf="currentSection >= 1" class="section-card">
+    <h2>Section B: General Information</h2>
 
-      <label>Date of Installation:</label>
-      <input type="date" name="installation" [(ngModel)]="formData.installation" required />
+    <label>Contact Person's Name:</label>
+    <input type="text" name="name" [(ngModel)]="formData.name" required />
+
+    <label>Contact Number:</label>
+    <input type="tel" name="number" [(ngModel)]="formData.number" required pattern="[0-9]{10}" maxlength="10" />
+
+    <label>Email ID:</label>
+    <div class="otp-row">
+      <input type="email" name="email" [(ngModel)]="formData.email" required />
+      <button type="button" (click)="sendOtp()" [disabled]="otpSent">Send OTP</button>
     </div>
 
-    <!-- Section B: General Information -->
-    <div *ngIf="currentSection === 1" class="section-card">
-      <h2>Section B: General Information</h2>
-      
-      <div class="form-group">
-        <label >Contact Person's Name:</label>
-        <input type="text" name="name" [(ngModel)]="formData.name" required />
-      </div>
-
-      <div class="form-group">
-        <label >Contact Person's Number:</label>
-        <input type="tel" name="number" [(ngModel)]="formData.number" required pattern="[0-9]{10}" maxlength="10"
-        title="Enter a valid 10-digit number" />
-      </div>
-
-      <div class="form-group">
-         <label>Contact Person's Email ID:</label>
-         <div class="otp-row">
-          <input type="email" name="email" [(ngModel)]="formData.email" required />
-          <button type="button" (click)="sendOtp()" [disabled]="otpSent">Send OTP</button>
-          </div>
-      </div>
-
-      <div class="form-group" *ngIf="otpSent">
-        <label>Enter OTP:</label>
-         <div class="otp-row">
-          <input type="text" [(ngModel)]="enteredOtp" name="otp" maxlength="6" required />
-          <button type="button" (click)="verifyOtp()">Verify OTP</button>
-          <div *ngIf="otpVerified" class="success">✅ Email verified</div>
-          <div *ngIf="otpError" class="error">❌ Invalid OTP</div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Contact Person's Designation:</label>
-        <mat-form-field appearance="fill">
-          <mat-label>Designation</mat-label>
-          <mat-select [(ngModel)]="formData.designation" name="designation" (selectionChange)="checkOtherDesignation()" required>
-            <mat-option *ngFor="let des of designations" [value]="des">{{ des }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- If 'Other' selected, show text input -->
-        <div *ngIf="showOtherDesignation">
-          <mat-form-field appearance="fill">
-            <mat-label>Enter your Designation</mat-label>
-            <input matInput [(ngModel)]="otherDesignation" name="otherDesignation" required />
-          </mat-form-field>
-        </div>
+    <div *ngIf="otpSent" class="form-group">
+      <label>Enter OTP:</label>
+      <div class="otp-row">
+        <input type="text" [(ngModel)]="enteredOtp" name="otp" maxlength="6" required />
+        <button type="button" (click)="verifyOtp()">Verify OTP</button>
+        <div *ngIf="otpVerified" class="success">✅ Email verified</div>
+        <div *ngIf="otpError" class="error">❌ Invalid OTP</div>
       </div>
     </div>
 
+     <mat-form-field appearance="outline" class="full-width">
+  <mat-label>Designation</mat-label>
+  <mat-select [(ngModel)]="formData.designation" name="designation" required (selectionChange)="checkOtherDesignation()">
+    <mat-option *ngFor="let des of designations" [value]="des">
+      {{ des }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
 
-    <!-- ✅ SECTION C FIXED -->
-    <div *ngIf="currentSection === 2" class="section-card">
-      <h2 class="section-title">Section C: Product Information</h2>
+<!-- Show 'Other' input if selected -->
+<div *ngIf="showOtherDesignation">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Enter your Designation</mat-label>
+    <input matInput [(ngModel)]="otherDesignation" name="otherDesignation" required />
+  </mat-form-field>
+</div>
+</div>
 
-      <div>
-        <label><strong>1. For what product was Condition Monitoring applied?</strong></label>
-        <div class="checkbox-row">
-          <label><input type="checkbox" value="Fill Pac" (change)="onCheckboxChange($event, 'products')" /> Fill Pac</label>
-          <label><input type="checkbox" value="Bucket Elevator" (change)="onCheckboxChange($event, 'products')" /> Bucket Elevator</label>
-        </div>
-      </div>
+  <!-- Section C -->
+  <!-- Section C: Product Information -->
+  <div *ngIf="currentSection >= 2" class="section-card">
+    <h2>Section C: Product Information</h2>
 
-      <div>
-        <label><strong>2. What details did you receive with the product?</strong></label>
-        <div class="checkbox-row">
-          <label><input type="checkbox" value="eDoc" (change)="onCheckboxChange($event, 'details')" /> eDoc</label>
-          <label><input type="checkbox" value="PartsPublisher" (change)="onCheckboxChange($event, 'details')" /> PartsPublisher</label>
-          <label><input type="checkbox" value="BG Insights" (change)="onCheckboxChange($event, 'details')" /> BG Insights</label>
-          <label><input type="checkbox" value="BG Predict" (change)="onCheckboxChange($event, 'details')" /> BG Predict</label>
-          <label><input type="checkbox" value="Elara" (change)="onCheckboxChange($event, 'details')" /> Elara</label>
-          <label><input type="checkbox" value="Hotline" (change)="onCheckboxChange($event, 'details')" /> Hotline</label>
-        </div>
-      </div>
-
-      <div>
-        <label><strong>3. Who uses the above application?</strong></label>
-        <div class="checkbox-row">
-          <label><input type="checkbox" value="Machine Operator" (change)="onCheckboxChange($event, 'users')" /> Machine Operator</label>
-          <label><input type="checkbox" value="Shift Manager" (change)="onCheckboxChange($event, 'users')" /> Shift Manager</label>
-          <label><input type="checkbox" value="Maintenance Manager" (change)="onCheckboxChange($event, 'users')" /> Maintenance Manager</label>
-          <label><input type="checkbox" value="Plant Manager" (change)="onCheckboxChange($event, 'users')" /> Plant Manager</label>
-        </div>
-      </div>
+    <label><strong>1. Product selected for Condition Monitoring:</strong></label>
+    <div class="checkbox-row">
+      <label><input type="checkbox" value="Fill Pac" (change)="onProductToggle($event)" /> Fill Pac </label>
+      <label><input type="checkbox" value="Bucket Elevator" (change)="onProductToggle($event)" /> Bucket Elevator</label>
     </div>
+
+    <div *ngIf="formData.selectedProducts.includes('Fill Pac')">
+      <h3 class="Section">Fill Pac Related Questions</h3>
+      <label >Date of Product Installation:</label>
+      <input type="date" name="fillpacinstallation" [(ngModel)]="formData.fillpacinstallation" required />
+      <label>1A. Is Fill Pac functioning optimally?</label>
+      <input type="text" name="fillPacFeedback" [(ngModel)]="formData.fillPacFeedback" required />
+    </div>
+
+    <div *ngIf="formData.selectedProducts.includes('Bucket Elevator')">
+      <h3 class="Section">Bucket Elevator Related Questions</h3>
+      <label>Date of Product Installation:</label>
+      <input type="date" name="bucketinstallation" [(ngModel)]="formData.bucketinstallation" required />
+      <label>1B. Is Bucket Elevator functioning as expected?</label>
+      <input type="text" name="bucketElevatorFeedback" [(ngModel)]="formData.bucketElevatorFeedback" required />
+    </div>
+  </div>
 
     <!-- SECTION D -->
 <div *ngIf="currentSection === 3" class="section-card">
-  <h2 class="section-title">Section D: Feedback</h2>
+  <h2>Section D: Feedback</h2>
 
   <!-- 1. Installation Quality -->
   <div>
@@ -214,15 +194,12 @@
 
   <!-- 8. Suggestions for Improvement -->
   <div>
-    <mat-form-field appearance="outline">
-      <mat-label>8. Suggestions for Improvement</mat-label>
+      <label>8. Suggestions for Improvement</label>
       <textarea
-        matInput
         rows="3"
         [(ngModel)]="formData.suggestions"
         name="suggestions"
       ></textarea>
-    </mat-form-field>
   </div>
 
   <!-- 9. Overall Rating -->
@@ -258,4 +235,4 @@
 
 
   </form>
-</div>
+

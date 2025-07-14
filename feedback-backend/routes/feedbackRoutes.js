@@ -5,7 +5,7 @@ const router = express.Router();
 const Feedback = require('../models/Feedback');
 const { sendOtpEmail } = require('../utils/emailService');
 const otpStore = {}; // 🔐 Keeps track of OTPs by email
-const Designation = require('../models/Designation');
+const Designation = require('../models/Designation.js');
 
 function generateOtp(length = 6) {
   return Math.floor(100000 + Math.random() * 900000).toString().substring(0, length);
@@ -52,43 +52,35 @@ router.post('/verify-otp', (req, res) => {
   }
 });
 
-router.post('/designations', async (req, res) => {
-  const { designation } = req.body;
-  if (!designation) return res.status(400).send('Designation required');
-
-  try {
-    // Save only if not already present
-    const existing = await Designation.findOne({ name: designation });
-    if (!existing) {
-      await Designation.create({ name: designation });
-    }
-    res.status(201).send('Designation saved');
-  } catch (err) {
-    console.error('Error saving designation:', err);
-    res.status(500).send('Error saving designation');
-  }
-});
-
-// Add new designation
+// POST /api/designations
 router.post('/', async (req, res) => {
-  const { designation } = req.body;
-  if (!designation) return res.status(400).send('Missing designation');
+ try {
+    const { designation } = req.body;
+    console.log("🛠️ Received:", designation);
 
-  try {
-    const existing = await Designation.findOne({ name: designation });
-    if (!existing) {
-      await Designation.create({ name: designation });
+    if (!designation || typeof designation !== 'string') {
+      return res.status(400).json({ error: 'Invalid designation' });
     }
-    res.status(200).send('Designation saved');
-  } catch (error) {
-    res.status(500).send('Error saving designation');
+
+    const newDesignation = new Designation({ designation });
+    await newDesignation.save();
+    
+    res.status(200).json({ message: 'Saved' });
+  } catch (err) {
+    console.error('🔥 Error saving designation:', err.message);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Fetch all designations
+// GET /api/designations
 router.get('/', async (req, res) => {
-  const designations = await Designation.find({});
-  res.json(designations.map(d => d.name));
+  try {
+    const designations = await Designation.find().sort({ designation: 1 }); // optional sort
+    res.json(designations.map(d => d.designation));
+  } catch (err) {
+    console.error('Error fetching designations:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 module.exports = router;

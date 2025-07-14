@@ -1,17 +1,12 @@
-// backend/models/Feedback.js
 const mongoose = require('mongoose');
 
-const FeedbackSchema = new mongoose.Schema({
+const feedbackSchema = new mongoose.Schema({
   name: String,
   number: String,
   email: String,
   designation: String,
   country: String,
   company: String,
-  installation: String,
-  products: [String],
-  details: [String],
-  users: [String],
   installationQuality: String,
   parameterAccuracy: String,
   dataReliability: String,
@@ -20,8 +15,15 @@ const FeedbackSchema = new mongoose.Schema({
   downtimeReduction: String,
   supportExperience: String,
   suggestions: String,
-  rating: String,
+  rating: Number,
   feedback: String,
-}, { timestamps: true });
 
-module.exports = mongoose.model('Feedback', FeedbackSchema);
+  // ✅ ADD THESE
+  selectedProducts: [String],
+  fillPacFeedback: String,
+  fillpacinstallation: String,
+  bucketElevatorFeedback: String,
+  bucketinstallation: String
+});
+
+module.exports = mongoose.model('Feedback', feedbackSchema);

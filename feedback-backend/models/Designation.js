@@ -10,3 +10,4 @@ const designationSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Designation', designationSchema);
+
