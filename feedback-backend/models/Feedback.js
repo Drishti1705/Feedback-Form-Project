@@ -7,6 +7,9 @@ const feedbackSchema = new mongoose.Schema({
   designation: String,
   country: String,
   company: String,
+  othercementcompany: String, // optional — only if needed
+
+  // Feedback fields
   installationQuality: String,
   parameterAccuracy: String,
   dataReliability: String,
@@ -18,12 +21,23 @@ const feedbackSchema = new mongoose.Schema({
   rating: Number,
   feedback: String,
 
-  // ✅ ADD THESE
+  // Product-specific fields
   selectedProducts: [String],
+
+  // Fill Pac
   fillPacFeedback: String,
   fillpacinstallation: String,
+  fillPacSpeed: String,
+  fillPacClampingIssues: String,
+  fillPacSuggestions: String,
+
+  // Bucket Elevator
   bucketElevatorFeedback: String,
-  bucketinstallation: String
+  bucketinstallation: String,
+  bucketSpillage: String,
+  bucketLiftRating: String,
+  bucketSuggestions: String,
 });
+
 
 module.exports = mongoose.model('Feedback', feedbackSchema);

@@ -1,3 +1,36 @@
+.logo-container {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto;
+  max-width: 400px;
+  height: auto;
+}
+
+.otp-message {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.otp-success {
+  color: green;
+}
+
+.otp-error {
+  color: red;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #d32f2f; /* red */
+  color: white;
+  font-weight: bold;
+}
+
+
 /* Form container like Google Forms */
 .form-container {
   max-width: 1000px;       /* Set a fixed max width */
@@ -10,6 +43,14 @@
   font-family: 'Roboto', sans-serif;
   color: #202124;
 }
+
+.required::after {
+  content: '*';
+  color: red;
+  margin-left: 6px;
+  
+}
+
 
 /* Headings */
 .section-title {
@@ -24,7 +65,7 @@
 
 /* Section spacing */
 .section-card {
-  width: 85%;
+  width: 30%;
   color:#1a237e;
   margin: 0 auto 32px auto;
   padding: 24px;
