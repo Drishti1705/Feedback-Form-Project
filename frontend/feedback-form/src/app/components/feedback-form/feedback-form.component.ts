@@ -11,6 +11,7 @@ import { FeedbackService } from '../../feedback.service';
 import { DesignationService } from '../../designation.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CementCompanyService } from '../../cement-company.service';
 
 @Component({
   selector: 'app-feedback-form',
@@ -32,9 +33,11 @@ export class FeedbackFormComponent implements OnInit {
   Object = Object;
   currentSection = 0;
   maxSections = 4;
-
+  today: string = new Date().toISOString().split('T')[0];
   othercementcompany: string = '';
   showOthercementcompany = false;
+  isSubmitted = false;
+
 
   formData: any = {
     name: '',
@@ -43,6 +46,7 @@ export class FeedbackFormComponent implements OnInit {
     designation: '',
     country: '',
     company: '',
+    plantlocation:'',
     installationQuality: '',
     parameterAccuracy: '',
     dataReliability: '',
@@ -106,8 +110,11 @@ export class FeedbackFormComponent implements OnInit {
     private feedbackService: FeedbackService,
     private designationService: DesignationService,
     private cdRef: ChangeDetectorRef,
-    private snackBar: MatSnackBar
+    private cementCompanyService: CementCompanyService,
+    private snackBar: MatSnackBar,
   ) {}
+
+  
 
   ngOnInit(): void {
     this.fetchDesignations();
@@ -130,6 +137,14 @@ export class FeedbackFormComponent implements OnInit {
     });
   }
 
+  blockNumbers(event: KeyboardEvent) {
+  const inputChar = String.fromCharCode(event.keyCode);
+  if (/\d/.test(inputChar)) {
+    event.preventDefault(); // block the key press
+  }
+}
+
+
   showSnackBar(message: string, duration: number = 3000) {
     this.snackBar.open(message, 'Close', {
       duration,
@@ -144,10 +159,24 @@ export class FeedbackFormComponent implements OnInit {
   }
 
   onCountryChange() {
-    this.cementCompanies = this.countriesWithCompanies[this.formData.country] || [];
-    this.formData.company = '';
-    this.showOthercementcompany = false;
-  }
+  const defaultList = this.countriesWithCompanies[this.formData.country] || [];
+
+  this.cementCompanyService.getCompanies(this.formData.country).subscribe({
+    next: (data: any[]) => {
+      const dbList = data.map(c => c.name);
+      this.cementCompanies = [...new Set([...defaultList, ...dbList, 'Other'])];
+      this.cdRef.detectChanges();
+    },
+    error: () => {
+      this.cementCompanies = [...defaultList, 'Other'];
+      this.cdRef.detectChanges();
+    }
+  });
+
+  this.formData.company = '';
+  this.showOthercementcompany = false;
+}
+
 
   onCompanyChange(selected: string) {
     this.showOthercementcompany = selected === 'Other';
@@ -155,6 +184,13 @@ export class FeedbackFormComponent implements OnInit {
       this.formData.othercementcompany = '';
     }
   }
+
+  preventEnterSubmit(event: Event) {
+  const keyboardEvent = event as KeyboardEvent;
+  if (keyboardEvent.key === 'Enter') {
+    keyboardEvent.preventDefault();
+  }
+}
 
   goToNext() {
   const formControls = document.querySelectorAll('form input, form select, form textarea');
@@ -193,7 +229,6 @@ export class FeedbackFormComponent implements OnInit {
 
   if (isValid) {
     this.currentSection++;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
@@ -289,8 +324,9 @@ export class FeedbackFormComponent implements OnInit {
     }
 
     if (this.showOthercementcompany && this.formData.othercementcompany) {
-      this.formData.company = this.formData.othercementcompany.trim();
-    }
+    this.formData.company = this.formData.othercementcompany.trim();
+    this.saveCementCompany(this.formData.othercementcompany); // 👈 call this
+  }
 
     const payload = { ...this.formData };
 
@@ -300,7 +336,7 @@ export class FeedbackFormComponent implements OnInit {
     });
 
     this.resetForm(); // 👈 Reset after successful submission
-
+    this.isSubmitted = true; // ✅ Show Thank You section
   }
 
   saveDesignation(newDes: string) {
@@ -319,6 +355,16 @@ isFormComplete(): boolean {
   return this.currentSection === this.maxSections - 1 && this.otpVerified;
 }
 
+saveCementCompany(newCompany: string) {
+  const country = this.formData.country;
+  this.cementCompanyService.addCompany(newCompany.trim(), country).subscribe({
+    next: () => {
+      console.log('✅ New cement company saved to DB for', country);
+      this.onCountryChange(); // re-fetch updated list
+    },
+    error: (err) => console.error('❌ Failed to save cement company:', err)
+  });
+}
 
 
   resetForm() {
