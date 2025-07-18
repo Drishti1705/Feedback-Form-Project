@@ -39,6 +39,7 @@ export class FeedbackFormComponent implements OnInit {
   isSubmitted = false;
 
 
+
   formData: any = {
     name: '',
     number: '',
@@ -46,29 +47,33 @@ export class FeedbackFormComponent implements OnInit {
     designation: '',
     country: '',
     company: '',
+    othercementcompany: '',
     plantlocation:'',
-    installationQuality: '',
-    parameterAccuracy: '',
-    dataReliability: '',
+
+    selectedProducts: [],
+    
+    fillPac: {
+      fillPacFeedback: '',
+      fillpacinstallation: '',
+      fillPacSpeed: '',
+      fillPacClampingIssues: '',
+      fillPacSuggestions: '',},
+
+    bucketElevator: {  
+    bucketElevatorFeedback: '',
+    bucketinstallation: '',
+    bucketSpillage: '',
+    bucketLiftRating: '',
+    bucketSuggestions: '',
+    },
+    implementationunderstanding: '',
+    failureIdentification: '',
+    training: '',
     dashboardUsability: '',
     maintenanceImpact: '',
     downtimeReduction: '',
     supportExperience: '',
     suggestions: '',
-    rating: '',
-    feedback: '',
-    fillPacFeedback: '',
-    bucketElevatorFeedback: '',
-    bucketinstallation: '',
-    fillpacinstallation: '',
-    selectedProducts: [],
-    fillPacSpeed: '',
-    fillPacClampingIssues: '',
-    fillPacSuggestions: '',
-    bucketSpillage: '',
-    bucketLiftRating: '',
-    bucketSuggestions: '',
-    othercementcompany: ''
   };
 
   designations: string[] = [];
@@ -269,10 +274,16 @@ export class FeedbackFormComponent implements OnInit {
   }
 
   sendOtp() {
+    if (this.otpSent) {
+    return;
+  }
+
     if (!this.formData.email) {
       this.showSnackBar('⚠️ Please enter your email.');
       return;
     }
+
+    this.otpSent = true; // Disable button immediately to prevent multiple clicks
 
     this.feedbackService.sendOtp(this.formData.email).subscribe({
       next: () => {
@@ -283,6 +294,8 @@ export class FeedbackFormComponent implements OnInit {
         this.otpStatusType = 'success';
       },
       error: () => {
+        this.otpSent = false; // Re-enable button on error
+
         this.otpStatusMessage = 'Failed to send OTP. Try again.';
         this.otpStatusType = 'error';
       }
@@ -307,6 +320,7 @@ export class FeedbackFormComponent implements OnInit {
           this.otpError = true;
           this.otpStatusMessage = 'Invalid OTP. Please try again.';
         }
+        
       },
       error: () => {
         this.otpVerified = false;
@@ -366,6 +380,12 @@ saveCementCompany(newCompany: string) {
   });
 }
 
+submitAnotherResponse() {
+  this.resetForm();
+  this.isSubmitted = false; // Show the form again
+}
+
+
 
   resetForm() {
   this.formData = {
@@ -380,7 +400,6 @@ saveCementCompany(newCompany: string) {
     fillPacFeedback: {},
     bucketElevatorFeedback: {},
     suggestions: '',
-    rating: 0,
   };
 
   this.otherDesignation = '';
@@ -396,4 +415,6 @@ saveCementCompany(newCompany: string) {
   this.currentSection = 0;
   window.scrollTo({ top: 0, behavior: 'smooth' });
   this.cdRef.detectChanges();
+  this.isSubmitted = false;
 }}
+
