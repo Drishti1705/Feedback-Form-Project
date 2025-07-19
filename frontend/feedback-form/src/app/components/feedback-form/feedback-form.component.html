@@ -91,54 +91,239 @@
     </div>
   </div>
 
-  <!-- Section C -->
   <!-- Section C: Product Information -->
-  <div *ngIf="currentSection === 2" class="section-card required" #sectionCard>
-    <h2>Section C: Product Information</h2>
+<div *ngIf="currentSection === 2" class="section-card required">
+  <h2>Section C: Product Information</h2>
 
-    <label><strong>1. Product selected for Condition Monitoring:</strong></label>
-    <div class="checkbox-row">
-      <label><input type="checkbox" value="Fill Pac" (change)="onProductToggle($event)" /> Fill Pac </label>
-      <label><input type="checkbox" value="Bucket Elevator" (change)="onProductToggle($event)" /> Bucket Elevator</label>
+  <label><strong>1. Product selected for Condition Monitoring:</strong></label>
+  <div class="checkbox-row">
+    <label><input type="checkbox" value="Fill Pac" (change)="onProductToggle($event)" /> Fill Pac</label>
+    <label><input type="checkbox" value="Bucket Elevator" (change)="onProductToggle($event)" /> Bucket Elevator</label>
+  </div>
+
+  <!-- Fill Pac Section -->
+  <div *ngIf="formData.selectedProducts.includes('Fill Pac')">
+    <h3 class="Section">Fill Pac Details</h3>
+
+    <label class="required">How many Fill Pac units do you have? *</label>
+    <select
+      name="fillPacTotalCount"
+      [(ngModel)]="formData.fillPac.totalUnits"
+      (change)="onFillPacUnitCountChange()"
+      required
+    >
+      <option value="" disabled selected>Select</option>
+      <option *ngFor="let count of fillPacUnits" [value]="count">{{ count }}</option>
+    </select>
+
+    <label class="required">How many Fill Pac units have undergone condition monitoring? *</label>
+    <select
+      name="fillPacMonitoredCount"
+      [(ngModel)]="formData.fillPac.monitoredUnits"
+      (change)="onFillPacMonitoringCountChange()"
+      required
+    >
+      <option value="" disabled selected>Select</option>
+      <option *ngFor="let count of fillPacMonitoredUnits" [value]="count">{{ count }}</option>
+    </select>
+
+    <!-- Dynamic Fill Pac Questions -->
+    <div *ngFor="let unit of monitoredFillPacArray; let i = index">
+<h4>{{ formData.fillPac.unitDetails[i].id }} - Product Information</h4>
+
+      <label class="required">How many spouts does it have?</label>
+        <select
+          [name]="'fillPacSpouts_' + i"
+          [(ngModel)]="formData.fillPac.unitDetails[i].spouts"
+          required
+          [ngModelOptions]="{ standalone: true }"
+        >
+          <option value="" disabled selected>Select</option>
+          <option value="8">8</option>
+          <option value="12">12</option>
+          <option value="16">16</option>
+        </select>
+
+      <label class="required">Date of Product Installation:</label>
+      <input
+        type="date"
+        [name]="'fillpacinstallation_' + i"
+        [(ngModel)]="formData.fillPac.unitDetails[i].installationDate"
+        [max]="today"
+        required
+        [ngModelOptions]="{ standalone: true }"
+      />
+
+      <label class="required">1A. Is Fill Pac functioning optimally?</label>
+      <input
+        type="text"
+        [name]="'fillPacFeedback_' + i"
+        [(ngModel)]="formData.fillPac.unitDetails[i].functionFeedback"
+        required
+        [ngModelOptions]="{ standalone: true }"
+      />
+
+      <label class="required">2A. Was the filling speed satisfactory?</label>
+      <input
+        type="text"
+        [name]="'fillPacSpeed_' + i"
+        [(ngModel)]="formData.fillPac.unitDetails[i].speedFeedback"
+        required
+        [ngModelOptions]="{ standalone: true }"
+      />
+
+      <label class="required">3A. Were there any issues during bag clamping?</label>
+      <input
+        type="text"
+        [name]="'fillPacClampingIssues_' + i"
+        [(ngModel)]="formData.fillPac.unitDetails[i].clampingIssues"
+        required
+        [ngModelOptions]="{ standalone: true }"
+      />
+
+      <label>4A. What all documents are provided to you?</label>
+<div class="checkbox-row">
+  <label><input type="checkbox" [name]="'docs_' + i" value="eDoc"
+    (change)="onDocCheckboxChange($event, formData.fillPac.unitDetails[i].documents)" /> eDoc</label>
+
+  <label><input type="checkbox" [name]="'docs_' + i" value="eLara"
+    (change)="onDocCheckboxChange($event, formData.fillPac.unitDetails[i].documents)" /> Elara</label>
+
+  <label><input type="checkbox" [name]="'docs_' + i" value="BG Insight"
+    (change)="onDocCheckboxChange($event, formData.fillPac.unitDetails[i].documents)" /> BG Insight</label>
+
+  <label><input type="checkbox" [name]="'docs_' + i" value="PartsPublisher"
+    (change)="onDocCheckboxChange($event, formData.fillPac.unitDetails[i].documents)" /> Parts Publisher</label>
+
+  <label><input type="checkbox" [name]="'docs_' + i" value="BG Predict "
+    (change)="onDocCheckboxChange($event, formData.fillPac.unitDetails[i].documents)" /> BG Predict</label>
+    
+    <label><input type="checkbox" [name]="'docs_' + i" value="Hotline"
+    (change)="onDocCheckboxChange($event, formData.fillPac.unitDetails[i].documents)" /> Hotline</label>
+</div>
+
+
+      <label>5A. Any suggestions to improve Fill Pac performance?</label>
+      <textarea
+        [name]="'fillPacSuggestions_' + i"
+        [(ngModel)]="formData.fillPac.unitDetails[i].suggestions"
+        [ngModelOptions]="{ standalone: true }"
+      ></textarea>
     </div>
+  </div>
 
-    <div *ngIf="formData.selectedProducts.includes('Fill Pac')">
-  <h3 class="Section">Fill Pac Related Questions</h3>
+  <!-- Bucket Elevator Section -->
+  <div *ngIf="formData.selectedProducts.includes('Bucket Elevator')">
+    <h3 class="Section">Bucket Elevator Details</h3>
 
-  <label class="required">Date of Product Installation:</label>
-  <input type="date" name="fillpacinstallation" [(ngModel)]="formData.fillPac.fillpacinstallation" [max]="today" required />
+    <label class="required">How many Bucket Elevator units do you have? *</label>
+    <select
+      name="bucketElevatorTotalCount"
+      [(ngModel)]="formData.bucketElevator.totalUnits"
+      (change)="onBucketElevatorUnitCountChange()"
+      required
+    >
+      <option value="" disabled selected>Select</option>
+      <option *ngFor="let count of bucketElevatorUnits" [value]="count">{{ count }}</option>
+    </select>
 
-  <label class="required">1A. Is Fill Pac functioning optimally?</label>
-  <input type="text" name="fillPacFeedback" [(ngModel)]="formData.fillPac.fillPacFeedback" required />
+    <label class="required">How many Bucket Elevator units have undergone condition monitoring? *</label>
+    <select
+      name="bucketElevatorMonitoredCount"
+      [(ngModel)]="formData.bucketElevator.monitoredUnits"
+      (change)="onBucketElevatorMonitoringCountChange()"
+      required
+    >
+      <option value="" disabled selected>Select</option>
+      <option *ngFor="let count of bucketElevatorMonitoredUnits" [value]="count">{{ count }}</option>
+    </select>
 
-  <label class="required">2A. Was the filling speed satisfactory?</label>
-  <input type="text" name="fillPacSpeed" [(ngModel)]="formData.fillPac.fillPacSpeed" required />
+    <!-- Dynamic Bucket Elevator Questions -->
+    <div *ngFor="let unit of monitoredBucketElevatorArray; let i = index">
+<h4>{{ formData.bucketElevator.unitDetails[i].id }} - Product Information</h4>
 
-  <label class="required">3A. Were there any issues during bag clamping?</label>
-  <input type="text" name="fillPacClampingIssues" [(ngModel)]="formData.fillPac.fillPacClampingIssues" required />
+      <label class="required">What is the type of the elevator?</label>
+        <input
+          type="text"
+          [name]="'bucketElevatorType_' + i"
+          [(ngModel)]="formData.bucketElevator.unitDetails[i].elevatorType"
+          required
+          [ngModelOptions]="{ standalone: true }"
+        />
+        <small>Example: Cement Silo, Clinker Transfer, etc.</small>
 
-  <label>4A. Any suggestions to improve Fill Pac performance?</label>
-  <textarea name="fillPacSuggestions" [(ngModel)]="formData.fillPac.fillPacSuggestions"></textarea>
+      <label class="required">Date of Product Installation:</label>
+      <input
+        type="date"
+        [name]="'bucketInstallation_' + i"
+        [(ngModel)]="formData.bucketElevator.unitDetails[i].installationDate"
+        [max]="today"
+        required
+        [ngModelOptions]="{ standalone: true }"
+      />
+
+      <label class="required">1B. Is the elevator working efficiently?</label>
+      <input
+        type="text"
+        [name]="'bucketWorking_' + i"
+        [(ngModel)]="formData.bucketElevator.unitDetails[i].functionFeedback"
+        required
+        [ngModelOptions]="{ standalone: true }"
+      />
+
+      <label class="required">2B. Any belt slippage issues?</label>
+      <input
+        type="text"
+        [name]="'bucketSlippage_' + i"
+        [(ngModel)]="formData.bucketElevator.unitDetails[i].beltSlippage"
+        required
+        [ngModelOptions]="{ standalone: true }"
+      />
+
+      <label class="required">3B. Are maintenance costs acceptable?</label>
+      <input
+        type="text"
+        [name]="'bucketMaintenance_' + i"
+        [(ngModel)]="formData.bucketElevator.unitDetails[i].maintenanceFeedback"
+        required
+        [ngModelOptions]="{ standalone: true }"
+      />
+
+            <label>4B. What all documents are provided to you?</label>
+<div class="checkbox-row">
+  <label><input type="checkbox" [name]="'docs_' + i" value="eDoc"
+    (change)="onDocCheckboxChange($event, formData.bucketElevator.unitDetails[i].documents
+)" /> eDoc</label>
+
+  <label><input type="checkbox" [name]="'docs_' + i" value="eLara"
+    (change)="onDocCheckboxChange($event, formData.bucketElevator.unitDetails[i].documents
+)" /> Elara</label>
+
+  <label><input type="checkbox" [name]="'docs_' + i" value="BG Insight"
+    (change)="onDocCheckboxChange($event, formData.bucketElevator.unitDetails[i].documents
+)" /> BG Insight</label>
+
+  <label><input type="checkbox" [name]="'docs_' + i" value="PartsPublisher"
+    (change)="onDocCheckboxChange($event, formData.bucketElevator.unitDetails[i].documents
+)" /> Parts Publisher</label>
+
+  <label><input type="checkbox" [name]="'docs_' + i" value="BG Predict "
+    (change)="onDocCheckboxChange($event, formData.bucketElevator.unitDetails[i].documents
+)" /> BG Predict</label>
+    
+    <label><input type="checkbox" [name]="'docs_' + i" value="Hotline"
+    (change)="onDocCheckboxChange($event, formData.bucketElevator.unitDetails[i].documents
+)" /> Hotline</label>
 </div>
 
-<div *ngIf="formData.selectedProducts.includes('Bucket Elevator')">
-  <h3 class="Section">Bucket Elevator Related Questions</h3>
-
-  <label class="required">Date of Product Installation:</label>
-  <input type="date" name="bucketinstallation" [(ngModel)]="formData.bucketElevator.bucketinstallation" [max]="today" required />
-
-  <label class="required">1B. Is Bucket Elevator functioning as expected?</label>
-  <input type="text" name="bucketElevatorFeedback" [(ngModel)]="formData.bucketElevator.bucketElevatorFeedback" required />
-
-  <label class="required">2B. Was there any material spillage?</label>
-  <input type="text" name="bucketSpillage" [(ngModel)]="formData.bucketElevator.bucketSpillage" required />
-
-  <label class="required">3B. How would you rate the vertical lift performance?</label>
-  <input type="text" name="bucketLiftRating" [(ngModel)]="formData.bucketElevator.bucketLiftRating" required />
-
-  <label>4B. Any suggestions to improve Bucket Elevator performance?</label>
-  <textarea name="bucketSuggestions" [(ngModel)]="formData.bucketElevator.bucketSuggestions"></textarea>
-</div>
+      <label>5B. Suggestions to improve Bucket Elevator performance?</label>
+      <textarea
+        [name]="'bucketSuggestions_' + i"
+        [(ngModel)]="formData.bucketElevator.unitDetails[i].suggestions"
+        [ngModelOptions]="{ standalone: true }"
+      ></textarea>
+    </div>
+  </div>
 </div>
 
 

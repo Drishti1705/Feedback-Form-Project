@@ -138,6 +138,14 @@
   border: 2px solid #1a237e;
 }
 
+.full-width {
+  display:block ;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #1a237e;
+
+}
 
 /* Labels */
 .section-card label,

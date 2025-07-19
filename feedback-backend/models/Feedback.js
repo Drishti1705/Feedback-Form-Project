@@ -1,5 +1,19 @@
 const mongoose = require('mongoose');
 
+const unitDetailSchema = new mongoose.Schema({
+  id: String,
+  installationDate: String,
+  functionFeedback: String,
+  speedFeedback: String, // for Fill Pac
+  clampingIssues: String, // for Fill Pac
+  beltSlippage: String, // for Bucket Elevator
+  maintenanceFeedback: String, // for Bucket Elevator
+  suggestions: String,
+  spouts: String,
+  elevatorType: String,
+  documents: [String] 
+});
+
 const feedbackSchema = new mongoose.Schema({
   name:String,
     number: String,
@@ -13,25 +27,17 @@ const feedbackSchema = new mongoose.Schema({
     selectedProducts: [String],
    
     fillPac: {
-      fillPacFeedback: {
-        type: Object,
-        default: {}
-      },
-      fillpacinstallation: String,
-      fillPacSpeed:String,
-      fillPacClampingIssues: String,
-      fillPacSuggestions: String},
+    totalUnits: Number,
+    monitoredUnits: Number,
+    unitDetails: [unitDetailSchema],
+  },
 
-    bucketElevator: {  
-    bucketElevatorFeedback:{
-      type: Object,
-      default: {}
-    },
-    bucketinstallation: String,
-    bucketSpillage: String,
-    bucketLiftRating: String,
-    bucketSuggestions: String,
-    },
+  // Section C: Bucket Elevator
+  bucketElevator: {
+    totalUnits: Number,
+    monitoredUnits: Number,
+    unitDetails: [unitDetailSchema],
+  },
 
     implementationunderstanding: String,
     failureIdentification:String,

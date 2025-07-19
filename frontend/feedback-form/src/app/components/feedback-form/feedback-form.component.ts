@@ -34,6 +34,16 @@ export class FeedbackFormComponent implements OnInit {
   currentSection = 0;
   maxSections = 4;
   today: string = new Date().toISOString().split('T')[0];
+  numberOptions: number[] = Array.from({ length: 10 }, (_, i) => i + 1);
+  fillPacUnits: number[] = Array.from({ length: 10 }, (_, i) => i + 1);
+  fillPacMonitoredUnits: number[] = [];
+  monitoredFillPacArray: any[] = [];
+
+  bucketElevatorUnits: number[] = Array.from({ length: 10 }, (_, i) => i + 1);
+  bucketElevatorMonitoredUnits: number[] = [];
+  monitoredBucketElevatorArray: any[] = [];
+
+
   othercementcompany: string = '';
   showOthercementcompany = false;
   isSubmitted = false;
@@ -53,19 +63,17 @@ export class FeedbackFormComponent implements OnInit {
     selectedProducts: [],
     
     fillPac: {
-      fillPacFeedback: '',
-      fillpacinstallation: '',
-      fillPacSpeed: '',
-      fillPacClampingIssues: '',
-      fillPacSuggestions: '',},
+  totalUnits: null,
+  monitoredUnits: null,
+  units: [] // each unit has installationDate, feedback, speed, clampingIssues, suggestions
+},
 
-    bucketElevator: {  
-    bucketElevatorFeedback: '',
-    bucketinstallation: '',
-    bucketSpillage: '',
-    bucketLiftRating: '',
-    bucketSuggestions: '',
-    },
+bucketElevator: {
+  totalUnits: null,
+  monitoredUnits: null,
+  units: [] // each unit has installationDate, feedback, spillage, liftRating, suggestions
+},
+
     implementationunderstanding: '',
     failureIdentification: '',
     training: '',
@@ -245,18 +253,76 @@ export class FeedbackFormComponent implements OnInit {
     }
   }
 
-  onProductToggle(event: Event) {
-    const checkbox = event.target as HTMLInputElement;
-    const value = checkbox.value;
-    const list = this.formData.selectedProducts;
+  onProductToggle(event: any) {
+  const product = event.target.value;
+  if (event.target.checked) {
+    this.formData.selectedProducts.push(product);
+  } else {
+    const index = this.formData.selectedProducts.indexOf(product);
+    if (index > -1) this.formData.selectedProducts.splice(index, 1);
+  }
+}
 
-    if (checkbox.checked && !list.includes(value)) {
-      list.push(value);
-    } else if (!checkbox.checked) {
-      const index = list.indexOf(value);
-      if (index > -1) list.splice(index, 1);
+onFillPacUnitCountChange() {
+  const total = this.formData.fillPac.totalUnits || 0;
+  this.fillPacMonitoredUnits = Array.from({ length: total }, (_, i) => i + 1);
+  this.formData.fillPac.monitoredUnits = null;
+  this.monitoredFillPacArray = [];
+  this.formData.fillPac.unitDetails = [];
+}
+
+onFillPacMonitoringCountChange() {
+  const count = this.formData.fillPac.monitoredUnits || 0;
+  this.monitoredFillPacArray = Array.from({ length: count });
+  this.formData.fillPac.unitDetails = Array.from({ length: count }, (_, i)=> ({
+    id: `FillPac-${i + 1}`,
+    installationDate: '',
+    functionFeedback: '',
+    speedFeedback: '',
+    clampingIssues: '',
+    suggestions: '',
+    spouts: '',        // ✅ New field
+    documents: []
+  }))
+}
+  onBucketElevatorUnitCountChange() {
+  const total = this.formData.bucketElevator.totalUnits || 0;
+  this.bucketElevatorMonitoredUnits = Array.from({ length: total }, (_, i) => i + 1);
+  this.formData.bucketElevator.monitoredUnits = null;
+  this.monitoredBucketElevatorArray = [];
+  this.formData.bucketElevator.unitDetails = [];
+}
+
+onBucketElevatorMonitoringCountChange() {
+  const count = this.formData.bucketElevator.monitoredUnits || 0;
+  this.monitoredBucketElevatorArray = Array.from({ length: count });
+  this.formData.bucketElevator.unitDetails = Array.from({ length: count },  (_, i) => ({
+    id: `BucketElevator-${i + 1}`,
+    installationDate: '',
+    functionFeedback: '',
+    beltSlippage: '',
+    maintenanceFeedback: '',
+    suggestions: '',
+    elevatorType: '',  // ✅ New field
+    documents: []
+  }));
+}
+
+onDocCheckboxChange(event: any, documentsArray: string[]) {
+  const value = event.target.value;
+  if (event.target.checked) {
+    if (!documentsArray.includes(value)) {
+      documentsArray.push(value);
+    }
+  } else {
+    const index = documentsArray.indexOf(value);
+    if (index !== -1) {
+      documentsArray.splice(index, 1);
     }
   }
+}
+
+
 
   showFillPacFeedback(): boolean {
     return this.formData.selectedProducts.includes('Fill Pac');
@@ -397,8 +463,17 @@ submitAnotherResponse() {
     email: '',
     designation: '',
     products: [],
-    fillPacFeedback: {},
-    bucketElevatorFeedback: {},
+    fillPac: {
+  totalUnits: 0,
+  monitoredUnits: 0,
+  units: []
+},
+bucketElevator: {
+  totalUnits: 0,
+  monitoredUnits: 0,
+  units: []
+},
+
     suggestions: '',
   };
 
@@ -416,5 +491,8 @@ submitAnotherResponse() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   this.cdRef.detectChanges();
   this.isSubmitted = false;
+  this.fillPacUnits = [];
+  this.bucketElevatorUnits = [];
+
 }}
 
