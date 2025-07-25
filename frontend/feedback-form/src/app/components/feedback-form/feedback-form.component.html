@@ -297,20 +297,84 @@
   <div *ngIf="formData.selectedProducts.includes('Fill Pac')">
     <h2>Section D: FillPac – OEE Dashboard Feedback</h2>
 
-    <!-- 1. Accuracy of OEE Data -->
+    <!-- 1. Is OEE Data Accurate -->
     <div>
-      <label class="required">1. How accurate is the real-time OEE data displayed for the FillPac line?</label>
-      <mat-radio-group [(ngModel)]="formData.fillPac.oeeAccuracy" name="oeeAccuracy" required>
-        <mat-radio-button value="Always accurate">Always accurate</mat-radio-button>
-        <mat-radio-button value="Mostly accurate">Mostly accurate</mat-radio-button>
-        <mat-radio-button value="Sometimes inaccurate">Sometimes inaccurate</mat-radio-button>
-        <mat-radio-button value="Frequently inaccurate">Frequently inaccurate</mat-radio-button>
+      <label class="required">1. Is the data shown in the dashboard accurate for the OEE?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.oeeDataAccurate" name="oeeDataAccurate" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
       </mat-radio-group>
+      <div *ngIf="formData.fillPac.oeeDataAccurate === 'No'">
+        <mat-form-field appearance="fill">
+          <mat-label>Please describe the inaccuracy</mat-label>
+          <textarea matInput [(ngModel)]="formData.fillPac.oeeInaccuracyDetails" name="oeeInaccuracyDetails"></textarea>
+        </mat-form-field>
+      </div>
     </div>
 
-    <!-- 2. Data Update Frequency -->
+    <!-- 2. Is Performance Accurate -->
     <div>
-      <label class="required">2. Is the data updated frequently enough to support your operations?</label>
+      <label class="required">2. Is the data shown in the dashboard accurate for Performance?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.performanceAccurate" name="performanceAccurate" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
+      </mat-radio-group>
+      <div *ngIf="formData.fillPac.performanceAccurate === 'No'">
+        <mat-form-field appearance="fill">
+          <mat-label>Please describe the inaccuracy</mat-label>
+          <textarea matInput [(ngModel)]="formData.fillPac.performanceInaccuracyDetails" name="performanceInaccuracyDetails"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- 3. Is Quality Accurate -->
+    <div>
+      <label class="required">3. Is the data shown in the dashboard accurate for Quality?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.qualityAccurate" name="qualityAccurate" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
+      </mat-radio-group>
+      <div *ngIf="formData.fillPac.qualityAccurate === 'No'">
+        <mat-form-field appearance="fill">
+          <mat-label>Please describe the inaccuracy</mat-label>
+          <textarea matInput [(ngModel)]="formData.fillPac.qualityInaccuracyDetails" name="qualityInaccuracyDetails"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- 4. Is Availability Accurate -->
+    <div>
+      <label class="required">4. Is the data shown in the dashboard accurate for Availability?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.availabilityAccurate" name="availabilityAccurate" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
+      </mat-radio-group>
+      <div *ngIf="formData.fillPac.availabilityAccurate === 'No'">
+        <mat-form-field appearance="fill">
+          <mat-label>Please describe the inaccuracy</mat-label>
+          <textarea matInput [(ngModel)]="formData.fillPac.availabilityInaccuracyDetails" name="availabilityInaccuracyDetails"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- 5. Does Bag Count Match -->
+    <div>
+      <label class="required">5. Does the total count of bags produced match what the dashboard is showing?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.bagCountMatch" name="bagCountMatch" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
+      </mat-radio-group>
+      <div *ngIf="formData.fillPac.bagCountMatch === 'No'">
+        <mat-form-field appearance="fill">
+          <mat-label>Please explain the mismatch</mat-label>
+          <textarea matInput [(ngModel)]="formData.fillPac.bagCountMismatchDetails" name="bagCountMismatchDetails"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- 6. Data Update Frequency -->
+    <div>
+      <label class="required">6. Is the data updated frequently enough to support your operations?</label>
       <mat-radio-group [(ngModel)]="formData.fillPac.dataUpdate" name="dataUpdate" required>
         <mat-radio-button value="Yes">Yes</mat-radio-button>
         <mat-radio-button value="No">No</mat-radio-button>
@@ -318,9 +382,9 @@
       </mat-radio-group>
     </div>
 
-    <!-- 3. Bottleneck Identification -->
+    <!-- 7. Bottleneck Identification -->
     <div>
-      <label class="required">3. Does the dashboard help you identify and act on bottlenecks in the FillPac process?</label>
+      <label class="required">7. Does the dashboard help you identify and act on bottlenecks in the FillPac process?</label>
       <mat-radio-group [(ngModel)]="formData.fillPac.bottleneckHelp" name="bottleneckHelp" required>
         <mat-radio-button value="Always">Always</mat-radio-button>
         <mat-radio-button value="Sometimes">Sometimes</mat-radio-button>
@@ -329,9 +393,9 @@
       </mat-radio-group>
     </div>
 
-    <!-- 4. Most Useful Metric -->
+    <!-- 8. Most Useful Metric -->
     <div>
-      <label class="required">4. Which metric do you find most useful for improving FillPac efficiency?</label>
+      <label class="required">8. Which metric do you find most useful for improving FillPac efficiency?</label>
       <mat-radio-group [(ngModel)]="formData.fillPac.usefulMetric" name="usefulMetric" required>
         <mat-radio-button value="Availability">Availability</mat-radio-button>
         <mat-radio-button value="Performance">Performance</mat-radio-button>
@@ -339,9 +403,9 @@
       </mat-radio-group>
     </div>
 
-    <!-- 5. Missing Features -->
+    <!-- 9. Missing Features -->
     <div>
-      <label class="required">5. Are any key features missing in the dashboard?</label>
+      <label class="required">9. Are any key features missing in the dashboard?</label>
       <mat-radio-group [(ngModel)]="formData.fillPac.missingFeatures" name="missingFeatures" required>
         <mat-radio-button value="Yes">Yes</mat-radio-button>
         <mat-radio-button value="No">No</mat-radio-button>
@@ -354,15 +418,15 @@
       </div>
     </div>
 
-    <!-- 6. Additional Visualizations -->
+    <!-- 10. Additional Visualizations -->
     <div>
-      <label>6. What additional visualizations or reports would help you better understand FillPac performance?</label>
+      <label>10. What additional visualizations or reports would help you better understand FillPac performance?</label>
       <textarea rows="3" [(ngModel)]="formData.fillPac.additionalVisualizations" name="additionalVisualizations"></textarea>
     </div>
 
-    <!-- 7. Receive Alerts -->
+    <!-- 11. Alerts Received -->
     <div>
-      <label class="required">7. Do you receive alerts or notifications when OEE drops below target levels?</label>
+      <label class="required">11. Do you receive alerts or notifications when OEE drops below target levels?</label>
       <mat-radio-group [(ngModel)]="formData.fillPac.alerts" name="alerts" required>
         <mat-radio-button value="Yes">Yes</mat-radio-button>
         <mat-radio-button value="No">No</mat-radio-button>
@@ -370,28 +434,40 @@
       </mat-radio-group>
     </div>
 
-    <!-- 8. Fault/Idle Time -->
+    <!-- 12. Fault/Idle Time -->
     <div>
-      <label class="required">8. The fault and idle time information provided helps reduce downtime.</label>
+      <label class="required">12. The fault and idle time information provided helps reduce downtime.</label>
       <mat-radio-group [(ngModel)]="formData.fillPac.faultIdleTimeHelpful" name="faultIdleTimeHelpful" required>
         <mat-radio-button value="Yes">Yes</mat-radio-button>
         <mat-radio-button value="No">No</mat-radio-button>
       </mat-radio-group>
     </div>
 
-    <!-- 9. Bag Info Usefulness -->
+    <!-- 13. Bag Info Usefulness -->
     <div>
-      <label class="required">9. The bag information provided helps reduce busted bags and improve the packer quality.</label>
+      <label class="required">13. The bag information provided helps reduce busted bags and improve the packer quality.</label>
       <mat-radio-group [(ngModel)]="formData.fillPac.bagInfoHelpful" name="bagInfoHelpful" required>
         <mat-radio-button value="Yes">Yes</mat-radio-button>
         <mat-radio-button value="No">No</mat-radio-button>
       </mat-radio-group>
     </div>
 
-        <!-- 11. Comments -->
+    <!-- 14. General Comments -->
     <div>
-      <label>10. Any other comments or improvement suggestions?</label>
+      <label>14. Any other comments or improvement suggestions?</label>
       <textarea rows="3" [(ngModel)]="formData.fillPac.additionalComments" name="additionalComments"></textarea>
+    </div>
+
+    <!-- 15. Dashboard User-Friendliness -->
+    <div>
+      <label class="required">15. Is the dashboard user-friendly and easy to navigate?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.userFriendly" name="userFriendly" required>
+        <mat-radio-button value="Very easy">Very easy</mat-radio-button>
+        <mat-radio-button value="Somewhat easy">Somewhat easy</mat-radio-button>
+        <mat-radio-button value="Neutral">Neutral</mat-radio-button>
+        <mat-radio-button value="Difficult">Difficult</mat-radio-button>
+        <mat-radio-button value="Very difficult">Very difficult</mat-radio-button>
+      </mat-radio-group>
     </div>
   </div>
 

@@ -42,25 +42,32 @@ const feedbackSchema = new mongoose.Schema({
   plantlocation: String,
   selectedProducts: [String],
 
-  fillPac: {
+   fillPac: {
     totalUnits: Number,
     monitoredUnits: Number,
     unitDetails: [fillPacUnitDetailSchema],
-
-    // ---- Section D (OEE dashboard) ----
-    oeeAccuracy: String,
-    dataUpdate: String,
-    bottleneckHelp: String,
-    usefulMetric: String,
-    missingFeatures: String,
+    oeeDataAccurate: String,                 // Yes | No
+    oeeInaccuracyDetails: String,
+    performanceAccurate: String,            // Yes | No
+    performanceInaccuracyDetails: String,
+    qualityAccurate: String,                // Yes | No
+    qualityInaccuracyDetails: String,
+    availabilityAccurate: String,           // Yes | No
+    availabilityInaccuracyDetails: String,
+    bagCountMatch: String,                  // Yes | No
+    bagCountMismatchDetails: String,
+    dataUpdate: String,                     // Yes | No | Not sure
+    bottleneckHelp: String,                 // Always | Sometimes | Rarely | Never
+    usefulMetric: String,                   // Availability | Performance | Quality
+    missingFeatures: String,                // Yes | No
     missingFeatureDetails: String,
     additionalVisualizations: String,
-    alerts: String,
-    satisfaction: Number,          // <- you had this in TS, add it here
+    alerts: String,                         // Yes | No | Not required
+    faultIdleTimeHelpful: String,           // Yes | No
+    bagInfoHelpful: String,                 // Yes | No
     additionalComments: String,
-    faultIdleTimeHelpful: String,
-    bagInfoHelpful: String,
-  },
+    userFriendly: String,   
+   },
 
   bucketElevator: {
     totalUnits: Number,
