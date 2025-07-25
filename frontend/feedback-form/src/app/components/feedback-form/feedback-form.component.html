@@ -95,7 +95,7 @@
 <div *ngIf="currentSection === 2" class="section-card required">
   <h2>Section C: Product Information</h2>
 
-  <label><strong>1. Product selected for Condition Monitoring:</strong></label>
+  <label><strong>1. Product selected for Monitoring:</strong></label>
   <div class="checkbox-row">
     <label><input type="checkbox" value="Fill Pac" (change)="onProductToggle($event)" /> Fill Pac</label>
     <label><input type="checkbox" value="Bucket Elevator" (change)="onProductToggle($event)" /> Bucket Elevator</label>
@@ -116,7 +116,7 @@
       <option *ngFor="let count of fillPacUnits" [value]="count">{{ count }}</option>
     </select>
 
-    <label class="required">How many Fill Pac units have undergone condition monitoring? *</label>
+    <label class="required">How many Fill Pac units have undergone OEE monitoring? *</label>
     <select
       name="fillPacMonitoredCount"
       [(ngModel)]="formData.fillPac.monitoredUnits"
@@ -153,35 +153,7 @@
         required
         [ngModelOptions]="{ standalone: true }"
       />
-
-      <label class="required">1A. Is Fill Pac functioning optimally?</label>
-      <input
-        type="text"
-        [name]="'fillPacFeedback_' + i"
-        [(ngModel)]="formData.fillPac.unitDetails[i].functionFeedback"
-        required
-        [ngModelOptions]="{ standalone: true }"
-      />
-
-      <label class="required">2A. Was the filling speed satisfactory?</label>
-      <input
-        type="text"
-        [name]="'fillPacSpeed_' + i"
-        [(ngModel)]="formData.fillPac.unitDetails[i].speedFeedback"
-        required
-        [ngModelOptions]="{ standalone: true }"
-      />
-
-      <label class="required">3A. Were there any issues during bag clamping?</label>
-      <input
-        type="text"
-        [name]="'fillPacClampingIssues_' + i"
-        [(ngModel)]="formData.fillPac.unitDetails[i].clampingIssues"
-        required
-        [ngModelOptions]="{ standalone: true }"
-      />
-
-      <label>4A. What all documents are provided to you?</label>
+      <label>1A. What all services are provided to you?</label>
 <div class="checkbox-row">
   <label><input type="checkbox" [name]="'docs_' + i" value="eDoc"
     (change)="onDocCheckboxChange($event, formData.fillPac.unitDetails[i].documents)" /> eDoc</label>
@@ -201,14 +173,6 @@
     <label><input type="checkbox" [name]="'docs_' + i" value="Hotline"
     (change)="onDocCheckboxChange($event, formData.fillPac.unitDetails[i].documents)" /> Hotline</label>
 </div>
-
-
-      <label>5A. Any suggestions to improve Fill Pac performance?</label>
-      <textarea
-        [name]="'fillPacSuggestions_' + i"
-        [(ngModel)]="formData.fillPac.unitDetails[i].suggestions"
-        [ngModelOptions]="{ standalone: true }"
-      ></textarea>
     </div>
   </div>
 
@@ -327,122 +291,199 @@
 </div>
 
 
-    <!-- SECTION D -->
-<div *ngIf="currentSection === 3" class="section-card"  #sectionCard >
-  <h2>Section D: Condition Monitoring Dashboard Feedback</h2>
+   <!-- SECTION D START -->
+<div *ngIf="currentSection === 3" class="section-card" #sectionCard>
+  <!-- Fill Pac Feedback Section -->
+  <div *ngIf="formData.selectedProducts.includes('Fill Pac')">
+    <h2>Section D: FillPac – OEE Dashboard Feedback</h2>
 
-  <!-- 1. Installation Quality -->
-  <div>
-    <label for="implementationunderstanding" class="required">1. How would you rate your understanding of the condition monitoring system implemented?</label>
-    <mat-radio-group
-      [(ngModel)]="formData.implementationunderstanding"
-      name="implementationunderstanding"
-      required
-    >
-      <mat-radio-button value="Excellent">Excellent</mat-radio-button>
-      <mat-radio-button value="Good">Good</mat-radio-button>
-      <mat-radio-button value="Average">Average</mat-radio-button>
-      <mat-radio-button value="Poor">Poor</mat-radio-button>
-    </mat-radio-group>
+    <!-- 1. Accuracy of OEE Data -->
+    <div>
+      <label class="required">1. How accurate is the real-time OEE data displayed for the FillPac line?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.oeeAccuracy" name="oeeAccuracy" required>
+        <mat-radio-button value="Always accurate">Always accurate</mat-radio-button>
+        <mat-radio-button value="Mostly accurate">Mostly accurate</mat-radio-button>
+        <mat-radio-button value="Sometimes inaccurate">Sometimes inaccurate</mat-radio-button>
+        <mat-radio-button value="Frequently inaccurate">Frequently inaccurate</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- 2. Data Update Frequency -->
+    <div>
+      <label class="required">2. Is the data updated frequently enough to support your operations?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.dataUpdate" name="dataUpdate" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
+        <mat-radio-button value="Not sure">Not sure</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- 3. Bottleneck Identification -->
+    <div>
+      <label class="required">3. Does the dashboard help you identify and act on bottlenecks in the FillPac process?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.bottleneckHelp" name="bottleneckHelp" required>
+        <mat-radio-button value="Always">Always</mat-radio-button>
+        <mat-radio-button value="Sometimes">Sometimes</mat-radio-button>
+        <mat-radio-button value="Rarely">Rarely</mat-radio-button>
+        <mat-radio-button value="Never">Never</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- 4. Most Useful Metric -->
+    <div>
+      <label class="required">4. Which metric do you find most useful for improving FillPac efficiency?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.usefulMetric" name="usefulMetric" required>
+        <mat-radio-button value="Availability">Availability</mat-radio-button>
+        <mat-radio-button value="Performance">Performance</mat-radio-button>
+        <mat-radio-button value="Quality">Quality</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- 5. Missing Features -->
+    <div>
+      <label class="required">5. Are any key features missing in the dashboard?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.missingFeatures" name="missingFeatures" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
+      </mat-radio-group>
+      <div *ngIf="formData.fillPac.missingFeatures === 'Yes'">
+        <mat-form-field appearance="fill">
+          <mat-label>Please specify</mat-label>
+          <textarea matInput [(ngModel)]="formData.fillPac.missingFeatureDetails" name="missingFeatureDetails"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- 6. Additional Visualizations -->
+    <div>
+      <label>6. What additional visualizations or reports would help you better understand FillPac performance?</label>
+      <textarea rows="3" [(ngModel)]="formData.fillPac.additionalVisualizations" name="additionalVisualizations"></textarea>
+    </div>
+
+    <!-- 7. Receive Alerts -->
+    <div>
+      <label class="required">7. Do you receive alerts or notifications when OEE drops below target levels?</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.alerts" name="alerts" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
+        <mat-radio-button value="Not required">Not required</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- 8. Fault/Idle Time -->
+    <div>
+      <label class="required">8. The fault and idle time information provided helps reduce downtime.</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.faultIdleTimeHelpful" name="faultIdleTimeHelpful" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- 9. Bag Info Usefulness -->
+    <div>
+      <label class="required">9. The bag information provided helps reduce busted bags and improve the packer quality.</label>
+      <mat-radio-group [(ngModel)]="formData.fillPac.bagInfoHelpful" name="bagInfoHelpful" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="No">No</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+        <!-- 11. Comments -->
+    <div>
+      <label>10. Any other comments or improvement suggestions?</label>
+      <textarea rows="3" [(ngModel)]="formData.fillPac.additionalComments" name="additionalComments"></textarea>
+    </div>
   </div>
 
-  <!-- 2. Parameter Accuracy -->
-  <div>
-    <label for="failureIdentification" class="required">2. How effective has condition monitoring been in identifying issues before failure?</label>
-    <mat-radio-group
-      [(ngModel)]="formData.failureIdentification"
-      name="failureIdentification"
-      required
-    >
-      <mat-radio-button value=" Effective">Effective</mat-radio-button>
-      <mat-radio-button value=" Not Effective"> Not Effective</mat-radio-button>
-    </mat-radio-group>
-  </div>
 
-  <!-- 3. Data Reliability -->
-  <div>
-    <label for="training" class="required">3.How satisfied are you with the training provided for using the condition monitoring tools?</label>
-    <mat-radio-group
-      [(ngModel)]="formData.training"
-      name="training"
-      required
-    >
-      <mat-radio-button value=" Very Satisfied"> Very Satisfied</mat-radio-button>
-      <mat-radio-button value="Satisfied">Satisfied</mat-radio-button>
-      <mat-radio-button value="Neutral">Neutral</mat-radio-button>
-      <mat-radio-button value="Dissatisfied">Dissatisfied</mat-radio-button>
-    </mat-radio-group>
-  </div>
+  <!-- Bucket Elevator Feedback Section -->
+  <div *ngIf="formData.selectedProducts.includes('Bucket Elevator')">
+    <h2>Section D: Bucket Elevator - Condition Monitoring Dashboard Feedback</h2>
 
-  <!-- 4. Dashboard Usability -->
-  <div>
-    <label for="dashboardUsability" class="required">4. How user-friendly is the condition monitoring dashboard/system?</label>
-    <mat-radio-group
-      [(ngModel)]="formData.dashboardUsability"
-      name="dashboardUsability"
-      required
-    >
-      <mat-radio-button value="Very Easy">Very Easy</mat-radio-button>
-      <mat-radio-button value="Moderate">Moderate</mat-radio-button>
-      <mat-radio-button value="Difficult">Difficult</mat-radio-button>
-    </mat-radio-group>
-  </div>
+    <!-- Q1 -->
+    <div>
+      <label class="required">1. How would you rate your understanding of the condition monitoring system implemented?</label>
+      <mat-radio-group [(ngModel)]="formData.bucketElevator.feedback.implementationunderstanding" name="implementationunderstanding" required>
+        <mat-radio-button value="Excellent">Excellent</mat-radio-button>
+        <mat-radio-button value="Good">Good</mat-radio-button>
+        <mat-radio-button value="Average">Average</mat-radio-button>
+        <mat-radio-button value="Poor">Poor</mat-radio-button>
+      </mat-radio-group>
+    </div>
 
-  <!-- 5. Maintenance Impact -->
-  <div>
-    <label for="maintenanceImpact" class="required">5. How often do you use the condition monitoring system to check equipment health?</label>
-    <mat-radio-group
-      [(ngModel)]="formData.maintenanceImpact"
-      name="maintenanceImpact"
-      required
-    >
-      <mat-radio-button value="Daily">Daily</mat-radio-button>
-      <mat-radio-button value="Weekly">Weekly</mat-radio-button>
-      <mat-radio-button value="Monthly">Monthly</mat-radio-button>
-      <mat-radio-button value="Rarely">Rarely</mat-radio-button>
-    </mat-radio-group>
-  </div>
+    <!-- Q2 -->
+    <div>
+      <label class="required">2. How effective has condition monitoring been in identifying issues before failure?</label>
+      <mat-radio-group [(ngModel)]="formData.bucketElevator.feedback.failureIdentification" name="failureIdentification" required>
+        <mat-radio-button value="Effective">Effective</mat-radio-button>
+        <mat-radio-button value="Not Effective">Not Effective</mat-radio-button>
+      </mat-radio-group>
+    </div>
 
-  <!-- 6. Downtime Reduction -->
-  <div>
-    <label for="downtimeReduction" class="required">6. Do you think the implementation of condition monitoring has reduced breakdowns?</label>
-    <mat-radio-group
-      [(ngModel)]="formData.downtimeReduction"
-      name="downtimeReduction"
-      required
-    >
-      <mat-radio-button value="Yes">Yes</mat-radio-button>
-      <mat-radio-button value="Somewhat">Somewhat</mat-radio-button>
-      <mat-radio-button value="Not Yet">Not Yet</mat-radio-button>
-    </mat-radio-group>
-  </div>
+    <!-- Q3 -->
+    <div>
+      <label class="required">3. How satisfied are you with the training provided for using the condition monitoring tools?</label>
+      <mat-radio-group [(ngModel)]="formData.bucketElevator.feedback.training" name="training" required>
+        <mat-radio-button value="Very Satisfied">Very Satisfied</mat-radio-button>
+        <mat-radio-button value="Satisfied">Satisfied</mat-radio-button>
+        <mat-radio-button value="Neutral">Neutral</mat-radio-button>
+        <mat-radio-button value="Dissatisfied">Dissatisfied</mat-radio-button>
+      </mat-radio-group>
+    </div>
 
-  <!-- 7. Support Experience -->
-  <div>
-    <label for="supportExperience" class="required">7. How would you rate the post-installation support and service related to condition monitoring?
-</label>
-    <mat-radio-group
-      [(ngModel)]="formData.supportExperience"
-      name="supportExperience"
-      required
-    >
-      <mat-radio-button value="Excellent">Excellent</mat-radio-button>
-      <mat-radio-button value="Good">Good</mat-radio-button>
-      <mat-radio-button value="Average">Average</mat-radio-button>
-      <mat-radio-button value="Poor">Poor</mat-radio-button>
-    </mat-radio-group>
-  </div>
+    <!-- Q4 -->
+    <div>
+      <label class="required">4. How user-friendly is the condition monitoring dashboard/system?</label>
+      <mat-radio-group [(ngModel)]="formData.bucketElevator.feedback.dashboardUsability" name="dashboardUsability" required>
+        <mat-radio-button value="Very Easy">Very Easy</mat-radio-button>
+        <mat-radio-button value="Moderate">Moderate</mat-radio-button>
+        <mat-radio-button value="Difficult">Difficult</mat-radio-button>
+      </mat-radio-group>
+    </div>
 
-  <!-- 8. Suggestions for Improvement -->
-  <div>
-      <label >8. Suggestions for Improvement</label>
-      <textarea
-        rows="3"
-        [(ngModel)]="formData.suggestions"
-        name="suggestions"
-      ></textarea>
+    <!-- Q5 -->
+    <div>
+      <label class="required">5. How often do you use the condition monitoring system to check equipment health?</label>
+      <mat-radio-group [(ngModel)]="formData.bucketElevator.feedback.maintenanceImpact" name="maintenanceImpact" required>
+        <mat-radio-button value="Daily">Daily</mat-radio-button>
+        <mat-radio-button value="Weekly">Weekly</mat-radio-button>
+        <mat-radio-button value="Monthly">Monthly</mat-radio-button>
+        <mat-radio-button value="Rarely">Rarely</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- Q6 -->
+    <div>
+      <label class="required">6. Do you think the implementation of condition monitoring has reduced breakdowns?</label>
+      <mat-radio-group [(ngModel)]="formData.bucketElevator.feedback.downtimeReduction" name="downtimeReduction" required>
+        <mat-radio-button value="Yes">Yes</mat-radio-button>
+        <mat-radio-button value="Somewhat">Somewhat</mat-radio-button>
+        <mat-radio-button value="Not Yet">Not Yet</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- Q7 -->
+    <div>
+      <label class="required">7. How would you rate the post-installation support and service related to condition monitoring?</label>
+      <mat-radio-group [(ngModel)]="formData.bucketElevator.feedback.supportExperience" name="supportExperience" required>
+        <mat-radio-button value="Excellent">Excellent</mat-radio-button>
+        <mat-radio-button value="Good">Good</mat-radio-button>
+        <mat-radio-button value="Average">Average</mat-radio-button>
+        <mat-radio-button value="Poor">Poor</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- Q8 -->
+    <div>
+      <label>8. Suggestions for Improvement</label>
+      <textarea rows="3" [(ngModel)]="formData.bucketElevator.feedback.suggestions" name="suggestions"></textarea>
+    </div>
   </div>
 </div>
+<!-- SECTION D END -->
+
+
+
 
     <!-- Navigation Buttons -->
     <div class="button-group">

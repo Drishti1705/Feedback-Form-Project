@@ -51,38 +51,52 @@ export class FeedbackFormComponent implements OnInit {
 
 
   formData: any = {
-    name: '',
-    number: '',
-    email: '',
-    designation: '',
-    country: '',
-    company: '',
-    othercementcompany: '',
-    plantlocation:'',
+  name: '',
+  number: '',
+  email: '',
+  designation: '',
+  country: '',
+  company: '',
+  othercementcompany: '',
+  plantlocation: '',
 
-    selectedProducts: [],
-    
-    fillPac: {
-  totalUnits: null,
-  monitoredUnits: null,
-  units: [] // each unit has installationDate, feedback, speed, clampingIssues, suggestions
-},
+  selectedProducts: [],
 
-bucketElevator: {
-  totalUnits: null,
-  monitoredUnits: null,
-  units: [] // each unit has installationDate, feedback, spillage, liftRating, suggestions
-},
+  fillPac: {
+    totalUnits: null,
+    monitoredUnits: null,
+    unitDetails: [],
+    oeeAccuracy: '',
+    dataUpdate: '',
+    bottleneckHelp: '',
+    usefulMetric: '',
+    missingFeatures: '',
+    missingFeatureDetails: '',
+    additionalVisualizations: '',
+    alerts: '',
+    satisfaction: 3,
+    additionalComments: '',
+    faultIdleTimeHelpful: '',
+    bagInfoHelpful: '',
+  },
 
-    implementationunderstanding: '',
-    failureIdentification: '',
-    training: '',
-    dashboardUsability: '',
-    maintenanceImpact: '',
-    downtimeReduction: '',
-    supportExperience: '',
-    suggestions: '',
-  };
+  bucketElevator: {
+    totalUnits: null,
+    monitoredUnits: null,
+    unitDetails: [],
+    feedback: {
+        implementationunderstanding: '',
+        failureIdentification: '',
+        training: '',
+        dashboardUsability: '',
+        maintenanceImpact: '',
+        downtimeReduction: '',
+        supportExperience: '',
+        suggestions: ''
+      }
+    }
+};
+
 
   designations: string[] = [];
   showOtherDesignation = false;
@@ -306,6 +320,18 @@ onBucketElevatorMonitoringCountChange() {
     elevatorType: '',  // ✅ New field
     documents: []
   }));
+
+this.formData.bucketElevator = this.formData.bucketElevator || {};
+this.formData.bucketElevator.feedback = {
+  implementationunderstanding: '',
+  failureIdentification: '',
+  training: '',
+  dashboardUsability: '',
+  maintenanceImpact: '',
+  downtimeReduction: '',
+  supportExperience: '',
+  suggestions: ''
+};
 }
 
 onDocCheckboxChange(event: any, documentsArray: string[]) {
